@@ -49,8 +49,27 @@ const App = () => {
     window.localStorage.clear()
   }
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault()
+    try {
+      const newBlog = {
+        title,
+        author,
+        url,
+      }
+      
+      const blogToAdd = await blogService.postBlog(newBlog)
+      
+      const bloglist = blogs.concat(blogToAdd)
+      setBlogs(bloglist)
+
+      setTitle('')
+      setAuthor('')
+      setUrl('')
+      
+    } catch(exception) {
+      console.log("Error", exception)
+    }
     console.log('Blogservice post')
   }
 
