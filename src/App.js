@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import Blog from './components/Blog'
+import Blogs from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
@@ -8,6 +8,9 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
+  const [title, setTitle] = useState('')
+  const [author, setAuthor] = useState('')
+  const [url, setUrl] = useState('')
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -46,6 +49,22 @@ const App = () => {
     window.localStorage.clear()
   }
 
+  const handleSubmit = (event) => {
+    event.preventDefault()
+    console.log('Blogservice post')
+  }
+
+  const handleBlogInput = (event) => {
+    if (event.target.name === "title") {
+      setTitle(event.target.value)
+    } else if (event.target.name === "author") {
+      setAuthor(event.target.value)
+    } else {
+      setUrl(event.target.value)
+    }
+    console.log(event.target.name)
+  }
+
   const loginView = () => (
     <div>
       <h2>log in to application</h2>
@@ -66,10 +85,19 @@ const App = () => {
     <div>
       <h2>blogs</h2>
       <p>{user.name} logged in<button onClick={handleLogout}>Logout</button></p>
-      {blogs.map(blog => <Blog key={blog.id} blog={blog} />)}
+      <Blogs 
+        blogs={blogs}
+        submitHandler={handleSubmit}
+        title={title}
+        author={author}
+        url={url}
+        blogChangeHandler={handleBlogInput}
+        setTitle={setTitle}
+        setAuthor={setAuthor}
+        setUrl={setUrl}/>
     </div>
   )
-
+ 
   return (
     <div>
       {user === null ? loginView() : blogView()}
