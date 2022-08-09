@@ -1,12 +1,44 @@
-const BlogForm = (params) => {
+import { useState } from 'react'
+
+const BlogForm = ({ addBlogHandler }) => {
+  const [title, setTitle] = useState('')
+  const [author, setAuthor] = useState('')
+  const [url, setUrl] = useState('')
+
+  const handleBlogInput = (event) => {
+    if (event.target.name === "title") {
+      setTitle(event.target.value)
+    } else if (event.target.name === "author") {
+      setAuthor(event.target.value)
+    } else {
+      setUrl(event.target.value)
+    }
+    console.log(event.target.name)
+  }
+
+  const handleSubmit = (event) => {
+    event.preventDefault()
+    
+    const newBlog = {
+      title,
+      author,
+      url,
+    }
+    addBlogHandler(newBlog)
+
+    setTitle('')
+    setAuthor('')
+    setUrl('')
+  }
+
   return (
     <div>
       <h2>create new</h2>
-      <form onSubmit={params.submitHandler}>
+      <form onSubmit={handleSubmit}>
         <ul>
-        <li>title:<input type="text" value={params.title} name="title" onChange={params.blogChangeHandler}/></li>
-        <li>author:<input type="text" value={params.author} name="author" onChange={params.blogChangeHandler}/></li>
-        <li>url:<input type="text" value={params.url} name="url" onChange={params.blogChangeHandler}/></li>
+        <li>title:<input type="text" value={title} name="title" onChange={handleBlogInput}/></li>
+        <li>author:<input type="text" value={author} name="author" onChange={handleBlogInput}/></li>
+        <li>url:<input type="text" value={url} name="url" onChange={handleBlogInput}/></li>
         <button type="submit">create</button>
         </ul>
       </form>
