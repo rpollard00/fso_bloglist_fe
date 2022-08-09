@@ -1,6 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Blogs from './components/Blog'
+import BlogForm from './components/BlogForm'
 import Notification from './components/Notification'
+import Togglable from './components/Togglable'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
@@ -9,11 +11,9 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
   const [notificationMessage, setNotificationMessage] = useState(null);
   const [notificationStyle, setNotificationStyle] = useState("info");
+  const hideBlogFormRef = useRef()
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -54,41 +54,17 @@ const App = () => {
     showNotification("Logout successful", "info")
   }
 
-  const handleSubmit = async (event) => {
-    event.preventDefault()
+  const addBlog = async (blogObj) => {
     try {
-      const newBlog = {
-        title,
-        author,
-        url,
-      }
-      
-      const blogToAdd = await blogService.postBlog(newBlog)
-      
+      const blogToAdd = await blogService.postBlog(blogObj)
       const bloglist = blogs.concat(blogToAdd)
       setBlogs(bloglist)
-
-      setTitle('')
-      setAuthor('')
-      setUrl('')
-
+      hideBlogFormRef.current.toggleVisibility()
       showNotification("Blog Entry added.", "info")
       
     } catch(exception) {
       showNotification(`Failed to create new blog post - ${exception.response.data.error}`, "error")
     }
-    console.log('Blogservice post')
-  }
-
-  const handleBlogInput = (event) => {
-    if (event.target.name === "title") {
-      setTitle(event.target.value)
-    } else if (event.target.name === "author") {
-      setAuthor(event.target.value)
-    } else {
-      setUrl(event.target.value)
-    }
-    console.log(event.target.name)
   }
 
   const showNotification = (message, style) => {
@@ -125,16 +101,10 @@ const App = () => {
         notificationStyle={notificationStyle}
       />
       <p>{user.name} logged in<button onClick={handleLogout}>Logout</button></p>
-      <Blogs 
-        blogs={blogs}
-        submitHandler={handleSubmit}
-        title={title}
-        author={author}
-        url={url}
-        blogChangeHandler={handleBlogInput}
-        setTitle={setTitle}
-        setAuthor={setAuthor}
-        setUrl={setUrl}/>
+      <Togglable buttonLabel="new note" ref={hideBlogFormRef}>
+        <BlogForm addBlogHandler={addBlog} />
+      </Togglable>
+      <Blogs blogs={blogs} />
     </div>
   )
  
