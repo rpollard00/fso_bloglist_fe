@@ -23,9 +23,9 @@ const postBlog = async (newBlog) => {
 const likeBlog = async (blogObj) => {
   const blogUrl = baseUrl + '/' + blogObj.id
   const likedBlog = {...blogObj, "likes": Number(blogObj.likes) + 1}
-  const response = await axios.put(blogUrl, likedBlog)
+  await axios.put(blogUrl, likedBlog)
 
-  return response.data
+  return likedBlog
 }
 
 const exports = {
