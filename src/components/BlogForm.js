@@ -6,9 +6,9 @@ const BlogForm = ({ addBlogHandler, user }) => {
   const [url, setUrl] = useState('')
 
   const handleBlogInput = (event) => {
-    if (event.target.name === "title") {
+    if (event.target.name === 'title') {
       setTitle(event.target.value)
-    } else if (event.target.name === "author") {
+    } else if (event.target.name === 'author') {
       setAuthor(event.target.value)
     } else {
       setUrl(event.target.value)
@@ -39,10 +39,10 @@ const BlogForm = ({ addBlogHandler, user }) => {
       <h2>create new</h2>
       <form onSubmit={handleSubmit}>
         <ul>
-        <li>title:<input type="text" value={title} name="title" onChange={handleBlogInput}/></li>
-        <li>author:<input type="text" value={author} name="author" onChange={handleBlogInput}/></li>
-        <li>url:<input type="text" value={url} name="url" onChange={handleBlogInput}/></li>
-        <button type="submit">create</button>
+          <li>title:<input type="text" value={title} name="title" onChange={handleBlogInput}/></li>
+          <li>author:<input type="text" value={author} name="author" onChange={handleBlogInput}/></li>
+          <li>url:<input type="text" value={url} name="url" onChange={handleBlogInput}/></li>
+          <button type="submit">create</button>
         </ul>
       </form>
     </div>

@@ -11,16 +11,16 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [notificationMessage, setNotificationMessage] = useState(null);
-  const [notificationStyle, setNotificationStyle] = useState("info");
+  const [notificationMessage, setNotificationMessage] = useState(null)
+  const [notificationStyle, setNotificationStyle] = useState('info')
   const hideBlogFormRef = useRef()
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs )
-    )  
+    )
   }, [])
-  
+
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBloglistUser')
     if (loggedUserJSON) {
@@ -39,45 +39,45 @@ const App = () => {
       blogService.setToken(user.token)
       setUsername('')
       setPassword('')
-      showNotification(`Successfully logged in as ${user.name} at ${new Date()}`, "info")
+      showNotification(`Successfully logged in as ${user.name} at ${new Date()}`, 'info')
     } catch (exception) {
-      showNotification(`Failed login attempt at ${new Date()} - ${exception.response.data.error}`, "error")
+      showNotification(`Failed login attempt at ${new Date()} - ${exception.response.data.error}`, 'error')
     }
   }
 
-  const handleLogout = (event) => {
+  const handleLogout = () => {
     setUser(null)
     setUsername('')
     setPassword('')
     blogService.setToken(null)
     window.localStorage.clear()
-    showNotification("Logout successful", "info")
+    showNotification('Logout successful', 'info')
   }
 
   const addBlog = async (blogObj) => {
     try {
       const user = blogObj.user // extract user information
       const blogToAdd = await blogService.postBlog(blogObj)
-      const bloglist = blogs.concat({...blogToAdd, user})
+      const bloglist = blogs.concat({ ...blogToAdd, user })
       setBlogs(bloglist)
       hideBlogFormRef.current.toggleVisibility()
-      showNotification("Blog Entry added.", "info")
-      
+      showNotification('Blog Entry added.', 'info')
+
     } catch(exception) {
-      showNotification(`Failed to create new blog post - ${exception.response.data.error}`, "error")
+      showNotification(`Failed to create new blog post - ${exception.response.data.error}`, 'error')
     }
   }
 
   const showNotification = (message, style) => {
-    setNotificationMessage(message);
-    setNotificationStyle(style);
-    setTimeout(() => setNotificationMessage(null), 5000);
+    setNotificationMessage(message)
+    setNotificationStyle(style)
+    setTimeout(() => setNotificationMessage(null), 5000)
   }
 
   const updateList = () => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs )
-    )  
+    )
   }
 
   const loginView = () => (
@@ -88,18 +88,19 @@ const App = () => {
         notificationStyle={notificationStyle}
       />
       <form onSubmit={handleLogin}>
-      <div>
-        username<input type="text" value={username} name="Username"
-          onChange={({ target }) => setUsername(target.value)}/>
-      </div>
-      <div>
-        password<input type="password" value={password} name="Password"
-          onChange={({ target }) => setPassword(target.value)}/>
-      </div>
-      <button type="submit">login</button>
+        <div>
+          username<input type="text" value={username} name="Username"
+            onChange={({ target }) => setUsername(target.value)}/>
+        </div>
+        <div>
+          password<input type="password" value={password} name="Password"
+            onChange={({ target }) => setPassword(target.value)}/>
+        </div>
+        <button type="submit">login</button>
       </form>
     </div>
   )
+
   const blogView = () => (
     <div>
       <h2>blogs</h2>
@@ -111,7 +112,7 @@ const App = () => {
       <Togglable buttonLabel="new note" ref={hideBlogFormRef}>
         <BlogForm addBlogHandler={addBlog} user={user}/>
       </Togglable>
-      <Blogs 
+      <Blogs
         blogs={blogs}
         user={user}
         handleNotification={showNotification}
@@ -119,7 +120,7 @@ const App = () => {
       />
     </div>
   )
- 
+
   return (
     <div>
       {user === null ? loginView() : blogView()}

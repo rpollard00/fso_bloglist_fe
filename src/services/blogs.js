@@ -22,7 +22,7 @@ const postBlog = async (newBlog) => {
 
 const likeBlog = async (blogObj) => {
   const blogUrl = baseUrl + '/' + blogObj.id
-  const likedBlog = {...blogObj, "likes": Number(blogObj.likes) + 1}
+  const likedBlog = { ...blogObj, 'likes': Number(blogObj.likes) + 1 }
   await axios.put(blogUrl, likedBlog)
 
   return likedBlog
@@ -32,7 +32,7 @@ const deleteBlog = async (blogObj) => {
   const config = {
     headers: { Authorization: token }
   }
-  
+
   const blogUrl = baseUrl + '/' + blogObj.id
   const response = await axios.delete(blogUrl, config)
 
