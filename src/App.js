@@ -56,8 +56,9 @@ const App = () => {
 
   const addBlog = async (blogObj) => {
     try {
+      const user = blogObj.user // extract user information
       const blogToAdd = await blogService.postBlog(blogObj)
-      const bloglist = blogs.concat(blogToAdd)
+      const bloglist = blogs.concat({...blogToAdd, user})
       setBlogs(bloglist)
       hideBlogFormRef.current.toggleVisibility()
       showNotification("Blog Entry added.", "info")
@@ -71,6 +72,12 @@ const App = () => {
     setNotificationMessage(message);
     setNotificationStyle(style);
     setTimeout(() => setNotificationMessage(null), 5000);
+  }
+
+  const updateList = () => {
+    blogService.getAll().then(blogs =>
+      setBlogs( blogs )
+    )  
   }
 
   const loginView = () => (
@@ -102,9 +109,14 @@ const App = () => {
       />
       <p>{user.name} logged in<button onClick={handleLogout}>Logout</button></p>
       <Togglable buttonLabel="new note" ref={hideBlogFormRef}>
-        <BlogForm addBlogHandler={addBlog} />
+        <BlogForm addBlogHandler={addBlog} user={user}/>
       </Togglable>
-      <Blogs blogs={blogs} />
+      <Blogs 
+        blogs={blogs}
+        user={user}
+        handleNotification={showNotification}
+        updateList={updateList}
+      />
     </div>
   )
  
