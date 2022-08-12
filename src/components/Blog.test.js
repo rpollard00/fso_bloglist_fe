@@ -59,7 +59,6 @@ test('details are rendered in the correct view', async () => {
 // I am handling this without passing a handler to Blog, all the handling is within
 // so I can't test like I'm being asked
 test('clicking the like button fires an event', async () => {
-  const onClickHandler = jest.fn()
   const user = userEvent.setup()
   const blog = {
     title: 'The Day the Earth Stood Still',
@@ -75,7 +74,7 @@ test('clicking the like button fires an event', async () => {
     name: 'claude',
     username: 'littleclaude'
   }
-  const { container } = render (<Blog blog={blog} user={loggedInUser} />)
+  render (<Blog blog={blog} user={loggedInUser} />)
 
   const showButton = screen.getByText('view')
   await user.click(showButton)
