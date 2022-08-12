@@ -45,7 +45,7 @@ const Blog = ({ blog, user, handleNotification, updateList }) => {
 
   if (showDetailed === true) {
     return (
-      <div style={style}>
+      <div className="blog" style={style}>
         {blogState.title}, by {blogState.author}<button onClick={handleShowDetailed}>hide</button><br/>
         {blogState.url}<br/>
         {blogState.likes}<button onClick={() => handleLikes(blogState.id)}>like</button><br/>
@@ -57,8 +57,8 @@ const Blog = ({ blog, user, handleNotification, updateList }) => {
   }
 
   return (
-    <div style={style}>
-      {blogState.title}, by {blogState.author} <button onClick={handleShowDetailed}>view</button>
+    <div className="blog" style={style}>
+      {blogState.title}, by {blogState.author} <button className="show" onClick={handleShowDetailed}>view</button>
     </div>
   )
 }
@@ -94,4 +94,4 @@ Blogs.propTypes = {
   user: PropTypes.object.isRequired
 }
 
-export default Blogs
+export { Blog, Blogs }
