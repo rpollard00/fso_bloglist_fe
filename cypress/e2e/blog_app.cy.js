@@ -1,7 +1,17 @@
 describe('Blog app', function() {
   beforeEach(function () {
     cy.request('POST', 'http://localhost:3003/api/testing/reset')
+
+    const user = {
+      'name': 'Test Johnson',
+      'username': 'testuser',
+      'password': 'test123',
+    }
+
+    cy.request('POST', 'http://localhost:3003/api/users', user)
+
     cy.visit('http://localhost:3000')
+
   })
 
   it('displays the login form', function() {
@@ -10,13 +20,7 @@ describe('Blog app', function() {
 
   describe('Can Login to app', function() {
     beforeEach(function () {
-      const user = {
-        'name': 'Test Johnson',
-        'username': 'testuser',
-        'password': 'test123',
-      }
 
-      cy.request('POST', 'http://localhost:3003/api/users', user)
     })
 
     it('Login succeeds', function() {
@@ -39,19 +43,9 @@ describe('Blog app', function() {
     })
   })
 
-  describe('When logged in, user can', function() {
+  describe('When logged in', function() {
     beforeEach(function() {
-      const user = {
-        'name': 'Test Johnson',
-        'username': 'testuser',
-        'password': 'test123',
-      }
-
-      cy.request('POST', 'http://localhost:3003/api/users', user)
-
-      cy.get('#username').type('testuser')
-      cy.get('#password').type('test123')
-      cy.get('#login-button').click()
+      cy.login({ username: 'testuser', password: 'test123' })
     })
 
     it('can make a new post', function() {
@@ -65,18 +59,66 @@ describe('Blog app', function() {
       cy.contains('This is a blog').and('contain', 'Bob Loblaw')
     })
 
-    it('can like a blog that exists', function () {
-      cy.contains('new blog').click()
+    describe('a blog already exists', function () {
+      beforeEach(function () {
+        cy.contains('new blog').click()
 
-      cy.get('#title').type('This is a blog')
-      cy.get('#author').type('Bob Loblaw')
-      cy.get('#url').type('www.internets.ca/eh')
-      cy.get('#submit-button').click()
+        cy.get('#title').type('This is a blog')
+        cy.get('#author').type('Bob Loblaw')
+        cy.get('#url').type('www.internets.ca/eh')
+        cy.get('#submit-button').click()
+      })
 
-      cy.contains('This is a blog').parent().contains('view').click()
-      cy.contains('This is a blog').parent().contains('like').click()
+      it('can like a blog that exists', function () {
+        cy.contains('This is a blog').parent().contains('view').click()
+        cy.contains('This is a blog').parent().contains('like').click()
 
-      cy.contains('This is a blog').parent().contains('1 likes')
+        cy.contains('This is a blog').parent().contains('1 likes')
+      })
+
+      it('cannot be deleted by another user', function () {
+        const user = {
+          'name': 'Test Miller',
+          'username': 'testmiller',
+          'password': 'test123',
+        }
+
+        cy.request('POST', 'http://localhost:3003/api/users', user)
+
+        cy.wait(500)
+        cy.get('#logout-button').click()
+        cy.wait(500)
+
+        cy.get('#username').type('testmiller')
+        cy.get('#password').type('test123')
+        cy.get('#login-button').click()
+
+        cy.contains('This is a blog').parent().contains('view').click()
+        cy.contains('This is a blog').parent().get('#remove-button').should('not.be.visible')
+      })
+
     })
+
+    describe('multiple blogs', function() {
+      beforeEach(function() {
+        cy.visit('http://localhost:3000')
+        cy.createBlog({ title: 'a first blog', author: 'Bob Test1', url: 'www.test.com', likes: 5 })
+        cy.createBlog({ title: 'a second blog', author: 'Bob Test1', url: 'www.test.com', likes: 1 })
+        cy.createBlog({ title: 'a third blog', author: 'Bob Test1', url: 'www.test.com', likes: 10 })
+      })
+
+      it('blogs are ordered by likes', function () {
+        cy.contains('a first blog').parent().contains('view').click()
+        cy.contains('a second blog').parent().contains('view').click()
+        cy.contains('a third blog').parent().contains('view').click()
+
+        cy.get('.blog').eq(0).contains('10 likes')
+        cy.get('.blog').eq(1).contains('5 likes')
+        cy.get('.blog').eq(2).contains('1 likes')
+      })
+    })
+
+
+
   })
 })

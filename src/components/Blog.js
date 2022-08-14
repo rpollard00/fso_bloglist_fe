@@ -50,7 +50,7 @@ const Blog = ({ blog, user, handleNotification, updateList }) => {
         {blogState.url}<br/>
         {blogState.likes} likes<button id="btn-like" onClick={() => handleLikes(blogState.id)}>like</button><br/>
         {blogState.user.name}<br/><br/>
-        <button style={ user.username === blogState.user.username ? visibleStyle : hiddenStyle}
+        <button id="remove-button" style={ user.username === blogState.user.username ? visibleStyle : hiddenStyle}
           onClick={() => handleDelete(blogState)}>Remove</button>
       </div>
     )
