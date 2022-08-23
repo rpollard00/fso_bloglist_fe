@@ -20,15 +20,15 @@ test('Checks that the event handler receives the expected information', async ()
     user: {
       name: 'claude',
       username: 'littleclaude',
-    }
+    },
   }
 
   const loggedInUser = {
     name: 'claude',
-    username: 'littleclaude'
+    username: 'littleclaude',
   }
 
-  render (<BlogForm addBlogHandler={addBlog} user={loggedInUser}/>)
+  render(<BlogForm addBlogHandler={addBlog} user={loggedInUser} />)
 
   const titleInput = screen.getByPlaceholderText('Title')
   const authorInput = screen.getByPlaceholderText('Author')
@@ -41,5 +41,4 @@ test('Checks that the event handler receives the expected information', async ()
   await user.click(createButton)
 
   expect(addBlog.mock.lastCall[0]).toEqual(testBlog)
-
 })

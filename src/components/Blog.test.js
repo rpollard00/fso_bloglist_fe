@@ -17,10 +17,11 @@ test('renders title and author', () => {
 
   render(<Blog blog={blog} />)
 
-  const element = screen.getByText('The Day the Earth Stood Still, by Robert Wise')
+  const element = screen.getByText(
+    'The Day the Earth Stood Still, by Robert Wise',
+  )
   //screen.debug(element)
   expect(element).toBeDefined()
-
 })
 
 // 5.14 Make a test which checks that the blog's url and number of likes
@@ -36,15 +37,15 @@ test('details are rendered in the correct view', async () => {
     user: {
       name: 'Claude',
       username: 'littleclaude',
-    }
+    },
   }
 
   const loggedInUser = {
     name: 'claude',
-    username: 'littleclaude'
+    username: 'littleclaude',
   }
 
-  const { container } = render (<Blog blog={blog} user={loggedInUser}  />)
+  const { container } = render(<Blog blog={blog} user={loggedInUser} />)
 
   const showButton = screen.getByText('view')
   await user.click(showButton)
@@ -68,13 +69,13 @@ test('clicking the like button fires an event', async () => {
     user: {
       name: 'Claude',
       username: 'littleclaude',
-    }
+    },
   }
   const loggedInUser = {
     name: 'claude',
-    username: 'littleclaude'
+    username: 'littleclaude',
   }
-  render (<Blog blog={blog} user={loggedInUser} />)
+  render(<Blog blog={blog} user={loggedInUser} />)
 
   const showButton = screen.getByText('view')
   await user.click(showButton)
@@ -83,7 +84,4 @@ test('clicking the like button fires an event', async () => {
 
   const result = await fireEvent.click(likeButton)
   expect(result).toBeTruthy()
-
-
 })
-

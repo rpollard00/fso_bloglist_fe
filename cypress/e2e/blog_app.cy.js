@@ -1,29 +1,26 @@
-describe('Blog app', function() {
+describe('Blog app', function () {
   beforeEach(function () {
     cy.request('POST', 'http://localhost:3003/api/testing/reset')
 
     const user = {
-      'name': 'Test Johnson',
-      'username': 'testuser',
-      'password': 'test123',
+      name: 'Test Johnson',
+      username: 'testuser',
+      password: 'test123',
     }
 
     cy.request('POST', 'http://localhost:3003/api/users', user)
 
     cy.visit('http://localhost:3000')
-
   })
 
-  it('displays the login form', function() {
+  it('displays the login form', function () {
     cy.contains('log in to application')
   })
 
-  describe('Can Login to app', function() {
-    beforeEach(function () {
+  describe('Can Login to app', function () {
+    beforeEach(function () {})
 
-    })
-
-    it('Login succeeds', function() {
+    it('Login succeeds', function () {
       cy.get('#username').type('testuser')
       cy.get('#password').type('test123')
       cy.get('#login-button').click()
@@ -31,7 +28,7 @@ describe('Blog app', function() {
       cy.contains('Test Johnson logged in')
     })
 
-    it('Login fails with bad creds', function() {
+    it('Login fails with bad creds', function () {
       cy.get('#username').type('testuser')
       cy.get('#password').type('testbadpw')
       cy.get('#login-button').click()
@@ -43,12 +40,12 @@ describe('Blog app', function() {
     })
   })
 
-  describe('When logged in', function() {
-    beforeEach(function() {
+  describe('When logged in', function () {
+    beforeEach(function () {
       cy.login({ username: 'testuser', password: 'test123' })
     })
 
-    it('can make a new post', function() {
+    it('can make a new post', function () {
       cy.contains('new blog').click()
 
       cy.get('#title').type('This is a blog')
@@ -76,11 +73,19 @@ describe('Blog app', function() {
         cy.contains('This is a blog').parent().contains('1 likes')
       })
 
+      it('can be deleted', function () {
+        cy.contains('This is a blog').parent().contains('view').click()
+        cy.contains('This is a blog').parent().get('#remove-button').click()
+        cy.should('not.contain', 'This is a blog')
+        cy.wait(2000)
+      })
+
       it('cannot be deleted by another user', function () {
+        cy.contains('logged in')
         const user = {
-          'name': 'Test Miller',
-          'username': 'testmiller',
-          'password': 'test123',
+          name: 'Test Miller',
+          username: 'testmiller',
+          password: 'test123',
         }
 
         cy.request('POST', 'http://localhost:3003/api/users', user)
@@ -94,17 +99,34 @@ describe('Blog app', function() {
         cy.get('#login-button').click()
 
         cy.contains('This is a blog').parent().contains('view').click()
-        cy.contains('This is a blog').parent().get('#remove-button').should('not.be.visible')
+        cy.contains('This is a blog')
+          .parent()
+          .get('#remove-button')
+          .should('not.be.visible')
       })
-
     })
 
-    describe('multiple blogs', function() {
-      beforeEach(function() {
+    describe('multiple blogs', function () {
+      beforeEach(function () {
         cy.visit('http://localhost:3000')
-        cy.createBlog({ title: 'a first blog', author: 'Bob Test1', url: 'www.test.com', likes: 5 })
-        cy.createBlog({ title: 'a second blog', author: 'Bob Test1', url: 'www.test.com', likes: 1 })
-        cy.createBlog({ title: 'a third blog', author: 'Bob Test1', url: 'www.test.com', likes: 10 })
+        cy.createBlog({
+          title: 'a first blog',
+          author: 'Bob Test1',
+          url: 'www.test.com',
+          likes: 5,
+        })
+        cy.createBlog({
+          title: 'a second blog',
+          author: 'Bob Test1',
+          url: 'www.test.com',
+          likes: 1,
+        })
+        cy.createBlog({
+          title: 'a third blog',
+          author: 'Bob Test1',
+          url: 'www.test.com',
+          likes: 10,
+        })
       })
 
       it('blogs are ordered by likes', function () {
@@ -117,8 +139,5 @@ describe('Blog app', function() {
         cy.get('.blog').eq(2).contains('1 likes')
       })
     })
-
-
-
   })
 })

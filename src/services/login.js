@@ -7,7 +7,7 @@ const login = async (creds) => {
 }
 
 const exports = {
-  login
+  login,
 }
 
 export default exports

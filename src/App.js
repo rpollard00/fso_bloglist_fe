@@ -16,9 +16,7 @@ const App = () => {
   const hideBlogFormRef = useRef()
 
   useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs( blogs )
-    )
+    blogService.getAll().then((blogs) => setBlogs(blogs))
   }, [])
 
   useEffect(() => {
@@ -39,9 +37,17 @@ const App = () => {
       blogService.setToken(user.token)
       setUsername('')
       setPassword('')
-      showNotification(`Successfully logged in as ${user.name} at ${new Date()}`, 'info')
+      showNotification(
+        `Successfully logged in as ${user.name} at ${new Date()}`,
+        'info',
+      )
     } catch (exception) {
-      showNotification(`Failed login attempt at ${new Date()} - ${exception.response.data.error}`, 'error')
+      showNotification(
+        `Failed login attempt at ${new Date()} - ${
+          exception.response.data.error
+        }`,
+        'error',
+      )
     }
   }
 
@@ -62,9 +68,11 @@ const App = () => {
       setBlogs(bloglist)
       hideBlogFormRef.current.toggleVisibility()
       showNotification('Blog Entry added.', 'info')
-
-    } catch(exception) {
-      showNotification(`Failed to create new blog post - ${exception.response.data.error}`, 'error')
+    } catch (exception) {
+      showNotification(
+        `Failed to create new blog post - ${exception.response.data.error}`,
+        'error',
+      )
     }
   }
 
@@ -75,9 +83,7 @@ const App = () => {
   }
 
   const updateList = () => {
-    blogService.getAll().then(blogs =>
-      setBlogs( blogs )
-    )
+    blogService.getAll().then((blogs) => setBlogs(blogs))
   }
 
   const loginView = () => (
@@ -89,14 +95,28 @@ const App = () => {
       />
       <form onSubmit={handleLogin}>
         <div>
-          username<input id="username" type="text" value={username} name="Username"
-            onChange={({ target }) => setUsername(target.value)}/>
+          username
+          <input
+            id="username"
+            type="text"
+            value={username}
+            name="Username"
+            onChange={({ target }) => setUsername(target.value)}
+          />
         </div>
         <div>
-          password<input id="password" type="password" value={password} name="Password"
-            onChange={({ target }) => setPassword(target.value)}/>
+          password
+          <input
+            id="password"
+            type="password"
+            value={password}
+            name="Password"
+            onChange={({ target }) => setPassword(target.value)}
+          />
         </div>
-        <button id="login-button" type="submit">login</button>
+        <button id="login-button" type="submit">
+          login
+        </button>
       </form>
     </div>
   )
@@ -115,7 +135,7 @@ const App = () => {
         </button>
       </p>
       <Togglable buttonLabel="new blog" ref={hideBlogFormRef}>
-        <BlogForm addBlogHandler={addBlog} user={user}/>
+        <BlogForm addBlogHandler={addBlog} user={user} />
       </Togglable>
       <Blogs
         blogs={blogs}
@@ -126,11 +146,7 @@ const App = () => {
     </div>
   )
 
-  return (
-    <div>
-      {user === null ? loginView() : blogView()}
-    </div>
-  )
+  return <div>{user === null ? loginView() : blogView()}</div>
 }
 
 export default App

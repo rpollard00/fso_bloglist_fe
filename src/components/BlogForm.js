@@ -31,7 +31,6 @@ const BlogForm = ({ addBlogHandler, user }) => {
     setTitle('')
     setAuthor('')
     setUrl('')
-
   }
 
   return (
@@ -39,37 +38,42 @@ const BlogForm = ({ addBlogHandler, user }) => {
       <h2>create new</h2>
       <form onSubmit={handleSubmit}>
         <ul>
-          <li>title:
+          <li>
+            title:
             <input
               type="text"
-              id='title'
+              id="title"
               value={title}
               name="title"
-              placeholder='Title'
+              placeholder="Title"
               onChange={handleBlogInput}
             />
           </li>
-          <li>author:
+          <li>
+            author:
             <input
               type="text"
-              id='author'
+              id="author"
               value={author}
               name="author"
-              placeholder='Author'
+              placeholder="Author"
               onChange={handleBlogInput}
             />
           </li>
-          <li>url:
+          <li>
+            url:
             <input
               type="text"
-              id='url'
+              id="url"
               value={url}
               name="url"
-              placeholder='www.website.com'
+              placeholder="www.website.com"
               onChange={handleBlogInput}
             />
           </li>
-          <button id="submit-button" type="submit">create</button>
+          <button id="submit-button" type="submit">
+            create
+          </button>
         </ul>
       </form>
     </div>

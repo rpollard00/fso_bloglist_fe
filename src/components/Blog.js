@@ -46,19 +46,40 @@ const Blog = ({ blog, user, handleNotification, updateList }) => {
   if (showDetailed === true) {
     return (
       <div className="blog" style={style}>
-        {blogState.title}, by {blogState.author}<button onClick={handleShowDetailed}>hide</button><br/>
-        {blogState.url}<br/>
-        {blogState.likes} likes<button id="btn-like" onClick={() => handleLikes(blogState.id)}>like</button><br/>
-        {blogState.user.name}<br/><br/>
-        <button id="remove-button" style={ user.username === blogState.user.username ? visibleStyle : hiddenStyle}
-          onClick={() => handleDelete(blogState)}>Remove</button>
+        {blogState.title}, by {blogState.author}
+        <button onClick={handleShowDetailed}>hide</button>
+        <br />
+        {blogState.url}
+        <br />
+        {blogState.likes} likes
+        <button id="btn-like" onClick={() => handleLikes(blogState.id)}>
+          like
+        </button>
+        <br />
+        {blogState.user.name}
+        <br />
+        <br />
+        <button
+          id="remove-button"
+          style={
+            user.username === blogState.user.username
+              ? visibleStyle
+              : hiddenStyle
+          }
+          onClick={() => handleDelete(blogState)}
+        >
+          Remove
+        </button>
       </div>
     )
   }
 
   return (
     <div className="blog" style={style}>
-      {blogState.title}, by {blogState.author} <button className="show" onClick={handleShowDetailed}>view</button>
+      {blogState.title}, by {blogState.author}{' '}
+      <button className="show" onClick={handleShowDetailed}>
+        view
+      </button>
     </div>
   )
 }
@@ -68,30 +89,24 @@ const Blogs = ({ blogs, user, handleNotification, updateList }) => {
     return (
       <>
         {blogs
-          .sort((a,b) => b.likes - a.likes)
-          .map(blog =>
+          .sort((a, b) => b.likes - a.likes)
+          .map((blog) => (
             <Blog
               key={blog.id}
               blog={blog}
               user={user}
               handleNotification={handleNotification}
               updateList={updateList}
-            />)}
+            />
+          ))}
       </>
     )
   }
-  return (
-    <div>
-      {renderBlogs()}
-    </div>
-  )
-
-
-
+  return <div>{renderBlogs()}</div>
 }
 
 Blogs.propTypes = {
-  user: PropTypes.object.isRequired
+  user: PropTypes.object.isRequired,
 }
 
 export { Blog, Blogs }
