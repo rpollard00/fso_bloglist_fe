@@ -1,9 +1,14 @@
 import { useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { appendBlog } from '../reducers/blogReducer'
+import { setNotification } from '../reducers/notificationReducer'
+import blogService from '../services/blogs'
 
-const BlogForm = ({ addBlogHandler, user }) => {
+const BlogForm = ({ user }) => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
+  const dispatch = useDispatch()
 
   const handleBlogInput = (event) => {
     if (event.target.name === 'title') {
@@ -12,6 +17,27 @@ const BlogForm = ({ addBlogHandler, user }) => {
       setAuthor(event.target.value)
     } else {
       setUrl(event.target.value)
+    }
+  }
+
+  const addBlog = async (blogObj) => {
+    try {
+      const user = blogObj.user // extract user information
+      const blogToAdd = await blogService.postBlog(blogObj)
+      dispatch(appendBlog(blogToAdd))
+      //hideBlogFormRef.current.toggleVisibility()
+      dispatch(
+        setNotification(
+          `Blog Entry ${blogObj.title} added by user ${user}`,
+          'info',
+        ),
+      )
+    } catch (exception) {
+      dispatch(
+        setNotification(
+          `Failed to create new blog post - ${exception.response.data.error}`,
+        ),
+      )
     }
   }
 
@@ -26,7 +52,7 @@ const BlogForm = ({ addBlogHandler, user }) => {
         username: user.username,
       },
     }
-    addBlogHandler(newBlog)
+    addBlog(newBlog)
 
     setTitle('')
     setAuthor('')

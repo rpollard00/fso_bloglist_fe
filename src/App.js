@@ -4,12 +4,13 @@ import { Blogs } from './components/Blog'
 import BlogForm from './components/BlogForm'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
+import { appendBlog, setBlogs } from './reducers/blogReducer'
 import { setNotification } from './reducers/notificationReducer'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
+  //const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
@@ -19,8 +20,8 @@ const App = () => {
   const hideBlogFormRef = useRef()
 
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs))
-  }, [])
+    blogService.getAll().then((blogs) => dispatch(setBlogs(blogs)))
+  }, [dispatch])
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBloglistUser')
@@ -67,10 +68,12 @@ const App = () => {
     try {
       const user = blogObj.user // extract user information
       const blogToAdd = await blogService.postBlog(blogObj)
-      const bloglist = blogs.concat({ ...blogToAdd, user })
-      setBlogs(bloglist)
+      dispatch(appendBlog(blogToAdd))
       hideBlogFormRef.current.toggleVisibility()
-      showNotification(`Blog Entry ${blogObj.title} added.`, 'info')
+      showNotification(
+        `Blog Entry ${blogObj.title} added by user ${user}`,
+        'info',
+      )
     } catch (exception) {
       showNotification(
         `Failed to create new blog post - ${exception.response.data.error}`,
@@ -82,10 +85,6 @@ const App = () => {
   const showNotification = (message, style) => {
     console.log(`${message} ${style}`)
     dispatch(setNotification(`Notification: ${message}`, 5))
-  }
-
-  const updateList = () => {
-    blogService.getAll().then((blogs) => setBlogs(blogs))
   }
 
   const loginView = () => (
@@ -133,12 +132,7 @@ const App = () => {
       <Togglable buttonLabel="new blog" ref={hideBlogFormRef}>
         <BlogForm addBlogHandler={addBlog} user={user} />
       </Togglable>
-      <Blogs
-        blogs={blogs}
-        user={user}
-        handleNotification={showNotification}
-        updateList={updateList}
-      />
+      <Blogs user={user} />
     </div>
   )
 

@@ -1,10 +1,11 @@
-import PropTypes from 'prop-types'
+/* eslint-disable react-redux/useSelector-prefer-selectors */
 import { useState } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+import { like, removeBlog } from '../reducers/blogReducer'
 import { setNotification } from '../reducers/notificationReducer'
 import blogService from '../services/blogs'
 
-const Blog = ({ blog, user, updateList }) => {
+const Blog = ({ blog, user, handleDelete }) => {
   const dispatch = useDispatch()
   const style = {
     borderStyle: 'solid',
@@ -22,54 +23,45 @@ const Blog = ({ blog, user, updateList }) => {
   }
 
   const [showDetailed, setShowDetailed] = useState(false)
-  const [blogState, setBlogState] = useState(blog)
+  //const [blogState, setBlogState] = useState(blog)
   const handleShowDetailed = () => {
     setShowDetailed(!showDetailed)
   }
 
   const handleLikes = async () => {
-    const response = await blogService.likeBlog(blogState)
-    return setBlogState(response)
+    await blogService.likeBlog(blog)
+    dispatch(like(blog.id))
   }
   // blogDelete happens in here, after the blog is deleted, we need to tell App to update the blogList and remove the id
   // of the blog we just deleted, soooo the function that would do that would live in App.js, which means that the useRef goes here,
   // useRef calls the function IN app.js in the handleDelete function here
 
-  const handleDelete = async () => {
-    if (window.confirm('Delete post?')) {
-      dispatch(setNotification(`Deleted post ${blogState.title}`))
-
-      const response = await blogService.deleteBlog(blogState)
-      updateList()
-
-      return response
-    }
+  if (!blog.id) {
+    return null
   }
 
   if (showDetailed === true) {
     return (
       <div className="blog" style={style}>
-        {blogState.title}, by {blogState.author}
+        {blog.title}, by {blog.author}
         <button onClick={handleShowDetailed}>hide</button>
         <br />
-        {blogState.url}
+        {blog.url}
         <br />
-        {blogState.likes} likes
-        <button id="btn-like" onClick={() => handleLikes(blogState.id)}>
+        {blog.likes} likes
+        <button id="btn-like" onClick={() => handleLikes(blog.id)}>
           like
         </button>
         <br />
-        {blogState.user.name}
+        {blog.user.name}
         <br />
         <br />
         <button
           id="remove-button"
           style={
-            user.username === blogState.user.username
-              ? visibleStyle
-              : hiddenStyle
+            user.username === blog.user.username ? visibleStyle : hiddenStyle
           }
-          onClick={() => handleDelete(blogState)}
+          onClick={() => handleDelete(blog)}
         >
           Remove
         </button>
@@ -79,7 +71,7 @@ const Blog = ({ blog, user, updateList }) => {
 
   return (
     <div className="blog" style={style}>
-      {blogState.title}, by {blogState.author}{' '}
+      {blog.title}, by {blog.author}{' '}
       <button className="show" onClick={handleShowDetailed}>
         view
       </button>
@@ -87,28 +79,36 @@ const Blog = ({ blog, user, updateList }) => {
   )
 }
 
-const Blogs = ({ blogs, user, updateList }) => {
-  const renderBlogs = () => {
-    return (
-      <>
-        {blogs
-          .sort((a, b) => b.likes - a.likes)
-          .map((blog) => (
-            <Blog
-              key={blog.id}
-              blog={blog}
-              user={user}
-              updateList={updateList}
-            />
-          ))}
-      </>
-    )
-  }
-  return <div>{renderBlogs()}</div>
-}
+const Blogs = ({ user }) => {
+  const dispatch = useDispatch()
 
-Blogs.propTypes = {
-  user: PropTypes.object.isRequired,
+  const handleDelete = async (blog) => {
+    if (window.confirm('Delete post?')) {
+      dispatch(setNotification(`Deleted post ${blog.title}`))
+      dispatch(removeBlog(blog.id))
+      const response = await blogService.deleteBlog(blog)
+
+      return response
+    }
+  }
+
+  const blogs = useSelector((state) => state.blogs)
+  console.log(blogs)
+  return (
+    <>
+      {blogs.map((blog) => {
+        if (!blog) return null // async delete messes up so gotta guard
+        return (
+          <Blog
+            key={blog.id}
+            blog={blog}
+            user={user}
+            handleDelete={handleDelete}
+          />
+        )
+      })}
+    </>
+  )
 }
 
 export { Blog, Blogs }
