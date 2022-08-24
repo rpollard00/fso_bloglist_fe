@@ -1,8 +1,11 @@
 import PropTypes from 'prop-types'
 import { useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { setNotification } from '../reducers/notificationReducer'
 import blogService from '../services/blogs'
 
-const Blog = ({ blog, user, handleNotification, updateList }) => {
+const Blog = ({ blog, user, updateList }) => {
+  const dispatch = useDispatch()
   const style = {
     borderStyle: 'solid',
     padding: 2,
@@ -34,7 +37,7 @@ const Blog = ({ blog, user, handleNotification, updateList }) => {
 
   const handleDelete = async () => {
     if (window.confirm('Delete post?')) {
-      handleNotification(`Deleted post ${blogState.title}`, 'info')
+      dispatch(setNotification(`Deleted post ${blogState.title}`))
 
       const response = await blogService.deleteBlog(blogState)
       updateList()
@@ -84,7 +87,7 @@ const Blog = ({ blog, user, handleNotification, updateList }) => {
   )
 }
 
-const Blogs = ({ blogs, user, handleNotification, updateList }) => {
+const Blogs = ({ blogs, user, updateList }) => {
   const renderBlogs = () => {
     return (
       <>
@@ -95,7 +98,6 @@ const Blogs = ({ blogs, user, handleNotification, updateList }) => {
               key={blog.id}
               blog={blog}
               user={user}
-              handleNotification={handleNotification}
               updateList={updateList}
             />
           ))}

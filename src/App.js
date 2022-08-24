@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
+import { useDispatch } from 'react-redux'
 import { Blogs } from './components/Blog'
 import BlogForm from './components/BlogForm'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
+import { setNotification } from './reducers/notificationReducer'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
@@ -11,8 +13,9 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [notificationMessage, setNotificationMessage] = useState(null)
-  const [notificationStyle, setNotificationStyle] = useState('info')
+  //const [notificationMessage, setNotificationMessage] = useState(null)
+  //const [notificationStyle, setNotificationStyle] = useState('info')
+  const dispatch = useDispatch()
   const hideBlogFormRef = useRef()
 
   useEffect(() => {
@@ -67,7 +70,7 @@ const App = () => {
       const bloglist = blogs.concat({ ...blogToAdd, user })
       setBlogs(bloglist)
       hideBlogFormRef.current.toggleVisibility()
-      showNotification('Blog Entry added.', 'info')
+      showNotification(`Blog Entry ${blogObj.title} added.`, 'info')
     } catch (exception) {
       showNotification(
         `Failed to create new blog post - ${exception.response.data.error}`,
@@ -77,9 +80,8 @@ const App = () => {
   }
 
   const showNotification = (message, style) => {
-    setNotificationMessage(message)
-    setNotificationStyle(style)
-    setTimeout(() => setNotificationMessage(null), 5000)
+    console.log(`${message} ${style}`)
+    dispatch(setNotification(`Notification: ${message}`, 5))
   }
 
   const updateList = () => {
@@ -89,10 +91,7 @@ const App = () => {
   const loginView = () => (
     <div>
       <h2>log in to application</h2>
-      <Notification
-        message={notificationMessage}
-        notificationStyle={notificationStyle}
-      />
+      <Notification />
       <form onSubmit={handleLogin}>
         <div>
           username
@@ -124,10 +123,7 @@ const App = () => {
   const blogView = () => (
     <div>
       <h2>blogs</h2>
-      <Notification
-        message={notificationMessage}
-        notificationStyle={notificationStyle}
-      />
+      <Notification />
       <p>
         {user.name} logged in
         <button id="logout-button" onClick={handleLogout}>
