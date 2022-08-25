@@ -1,11 +1,6 @@
-import { useState } from 'react'
-import usersService from '../services/users'
+import { Link } from 'react-router-dom'
 
-const Users = () => {
-  const [users, setUsers] = useState([])
-
-  usersService.getAll().then((users) => setUsers(users))
-
+const Users = ({ users }) => {
   return (
     <>
       <h2>Users</h2>
@@ -19,7 +14,9 @@ const Users = () => {
         <tbody>
           {users.map((user) => (
             <tr key={user.id}>
-              <td>{user.name}</td>
+              <td>
+                <Link to={`/users/${user.id}`}>{user.name}</Link>
+              </td>
               <td>{user.blogs.length}</td>
             </tr>
           ))}

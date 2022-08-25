@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
+import blogService from '../services/blogs'
 
 const blogSlice = createSlice({
   name: 'blogs',
@@ -28,6 +29,13 @@ const blogSlice = createSlice({
     },
   },
 })
+
+export const likeBlog = blog => {
+  return async dispatch => {
+    await blogService.likeBlog(blog)
+    dispatch(like(blog.id))
+  }
+}
 
 export const { createBlog, appendBlog, removeBlog, setBlogs, like, sortBlogs } =
   blogSlice.actions

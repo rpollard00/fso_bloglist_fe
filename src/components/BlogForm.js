@@ -31,14 +31,15 @@ const BlogForm = () => {
       //hideBlogFormRef.current.toggleVisibility()
       dispatch(
         setNotification(
-          `Blog Entry ${blogObj.title} added by user ${user}`,
-          'info',
+          `Blog Entry ${blogObj.title} added by user ${user.username}`,
+          5,
         ),
       )
     } catch (exception) {
       dispatch(
         setNotification(
           `Failed to create new blog post - ${exception.response.data.error}`,
+          5,
         ),
       )
     }

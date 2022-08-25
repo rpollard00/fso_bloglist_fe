@@ -1,27 +1,34 @@
+/* eslint-disable indent */
 /* eslint-disable react-redux/useSelector-prefer-selectors */
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Link, Route, Routes } from 'react-router-dom'
-import { Blogs } from './components/Blog'
+import { Link, Route, Routes, useMatch } from 'react-router-dom'
+import Blog from './components/Blog'
+import { Blogs } from './components/Blogs'
 import Login from './components/Login'
 import Notification from './components/Notification'
+import User from './components/User'
 import Users from './components/Users'
 import { setBlogs } from './reducers/blogReducer'
 import { setNotification } from './reducers/notificationReducer'
 import { setUser } from './reducers/userReducer'
 import blogService from './services/blogs'
+import usersService from './services/users'
 
 const App = () => {
-  //const [blogs, setBlogs] = useState([])
-  //const [user, setUser] = useState(null)
   const user = useSelector((state) => state.user)
-  //const [notificationMessage, setNotificationMessage] = useState(null)
-  //const [notificationStyle, setNotificationStyle] = useState('info')
+  const blogs = useSelector((state) => state.blogs)
+  const [users, setUsers] = useState([])
+
   const dispatch = useDispatch()
 
   useEffect(() => {
     blogService.getAll().then((blogs) => dispatch(setBlogs(blogs)))
   }, [dispatch])
+
+  useEffect(() => {
+    usersService.getAll().then((users) => setUsers(users))
+  }, [])
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBloglistUser')
@@ -32,6 +39,20 @@ const App = () => {
     }
   }, [])
 
+  const match = useMatch('/users/:id')
+  const userSelected = match
+    ? users.find((u) => {
+        return u.id === match.params.id
+      })
+    : null
+
+  const blogMatch = useMatch('/blogs/:id')
+  const blogSelected = blogMatch
+    ? blogs.find((u) => {
+        return u.id === blogMatch.params.id
+      })
+    : null
+
   const handleLogout = () => {
     dispatch(setUser(null))
     blogService.setToken(null)
@@ -39,8 +60,7 @@ const App = () => {
     showNotification('Logout successful', 'info')
   }
 
-  const showNotification = (message, style) => {
-    console.log(`${message} ${style}`)
+  const showNotification = (message, _style) => {
     dispatch(setNotification(`Notification: ${message}`, 5))
   }
 
@@ -57,10 +77,13 @@ const App = () => {
   }
 
   const Nav = () => {
+    const padding = {
+      padding: 5
+    }
     return (
       <div>
-        <Link to="/">home</Link>
-        <Link to="/users">users</Link>
+        <Link style={padding} to="/">home</Link>
+        <Link style={padding} to="/users">users</Link>
         <LogoutButton />
       </div>
     )
@@ -73,7 +96,9 @@ const App = () => {
       <Notification />
       <Routes>
         <Route path="/" element={user === null ? <Login /> : <Blogs />} />
-        <Route path="/users" element={<Users />} />
+        <Route path="/users" element={<Users users={users} />} />
+        <Route path="/users/:id" element={<User user={userSelected} />} />
+        <Route path="/blogs/:id" element={<Blog blog={blogSelected} />} />
       </Routes>
     </>
   )
