@@ -79,8 +79,9 @@ const Blog = ({ blog, user, handleDelete }) => {
   )
 }
 
-const Blogs = ({ user }) => {
+const Blogs = () => {
   const dispatch = useDispatch()
+  const user = useSelector((state) => state.user)
 
   const handleDelete = async (blog) => {
     if (window.confirm('Delete post?')) {

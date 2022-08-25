@@ -1,19 +1,21 @@
-import { useEffect, useRef, useState } from 'react'
-import { useDispatch } from 'react-redux'
+/* eslint-disable react-redux/useSelector-prefer-selectors */
+import { useEffect, useRef } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { Link, Route, Routes } from 'react-router-dom'
 import { Blogs } from './components/Blog'
 import BlogForm from './components/BlogForm'
+import Login from './components/Login'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
-import { appendBlog, setBlogs } from './reducers/blogReducer'
+import { setBlogs } from './reducers/blogReducer'
 import { setNotification } from './reducers/notificationReducer'
+import { setUser } from './reducers/userReducer'
 import blogService from './services/blogs'
-import loginService from './services/login'
 
 const App = () => {
   //const [blogs, setBlogs] = useState([])
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)
+  //const [user, setUser] = useState(null)
+  const user = useSelector((state) => state.user)
   //const [notificationMessage, setNotificationMessage] = useState(null)
   //const [notificationStyle, setNotificationStyle] = useState('info')
   const dispatch = useDispatch()
@@ -26,60 +28,17 @@ const App = () => {
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBloglistUser')
     if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON)
-      setUser(user)
-      blogService.setToken(user.token)
+      const loginUser = JSON.parse(loggedUserJSON)
+      dispatch(setUser(loginUser))
+      blogService.setToken(loginUser.token)
     }
   }, [])
 
-  const handleLogin = async (event) => {
-    event.preventDefault()
-    try {
-      const user = await loginService.login({ username, password })
-      window.localStorage.setItem('loggedBloglistUser', JSON.stringify(user))
-      setUser(user)
-      blogService.setToken(user.token)
-      setUsername('')
-      setPassword('')
-      showNotification(
-        `Successfully logged in as ${user.name} at ${new Date()}`,
-        'info',
-      )
-    } catch (exception) {
-      showNotification(
-        `Failed login attempt at ${new Date()} - ${
-          exception.response.data.error
-        }`,
-        'error',
-      )
-    }
-  }
-
   const handleLogout = () => {
-    setUser(null)
-    setUsername('')
-    setPassword('')
+    dispatch(setUser(null))
     blogService.setToken(null)
     window.localStorage.clear()
     showNotification('Logout successful', 'info')
-  }
-
-  const addBlog = async (blogObj) => {
-    try {
-      const user = blogObj.user // extract user information
-      const blogToAdd = await blogService.postBlog(blogObj)
-      dispatch(appendBlog(blogToAdd))
-      hideBlogFormRef.current.toggleVisibility()
-      showNotification(
-        `Blog Entry ${blogObj.title} added by user ${user}`,
-        'info',
-      )
-    } catch (exception) {
-      showNotification(
-        `Failed to create new blog post - ${exception.response.data.error}`,
-        'error',
-      )
-    }
   }
 
   const showNotification = (message, style) => {
@@ -87,39 +46,7 @@ const App = () => {
     dispatch(setNotification(`Notification: ${message}`, 5))
   }
 
-  const loginView = () => (
-    <div>
-      <h2>log in to application</h2>
-      <Notification />
-      <form onSubmit={handleLogin}>
-        <div>
-          username
-          <input
-            id="username"
-            type="text"
-            value={username}
-            name="Username"
-            onChange={({ target }) => setUsername(target.value)}
-          />
-        </div>
-        <div>
-          password
-          <input
-            id="password"
-            type="password"
-            value={password}
-            name="Password"
-            onChange={({ target }) => setPassword(target.value)}
-          />
-        </div>
-        <button id="login-button" type="submit">
-          login
-        </button>
-      </form>
-    </div>
-  )
-
-  const blogView = () => (
+  const BlogView = () => (
     <div>
       <h2>blogs</h2>
       <Notification />
@@ -130,13 +57,31 @@ const App = () => {
         </button>
       </p>
       <Togglable buttonLabel="new blog" ref={hideBlogFormRef}>
-        <BlogForm addBlogHandler={addBlog} user={user} />
+        <BlogForm />
       </Togglable>
-      <Blogs user={user} />
+      <Blogs />
     </div>
   )
 
-  return <div>{user === null ? loginView() : blogView()}</div>
+  const Nav = () => {
+    return (
+      <div>
+        <Link to="/">home</Link>
+        <Link to="/users">users</Link>
+      </div>
+    )
+  }
+
+  //return <div>{user === null ? loginView() : blogView()}</div>
+  return (
+    <>
+      <Nav />
+      <Notification />
+      <Routes>
+        <Route path="/" element={user === null ? <Login /> : <BlogView />} />
+      </Routes>
+    </>
+  )
 }
 
 export default App

@@ -1,13 +1,15 @@
+/* eslint-disable react-redux/useSelector-prefer-selectors */
 import { useState } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { appendBlog } from '../reducers/blogReducer'
 import { setNotification } from '../reducers/notificationReducer'
 import blogService from '../services/blogs'
 
-const BlogForm = ({ user }) => {
+const BlogForm = () => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
+  const user = useSelector((state) => state.user)
   const dispatch = useDispatch()
 
   const handleBlogInput = (event) => {
@@ -22,9 +24,10 @@ const BlogForm = ({ user }) => {
 
   const addBlog = async (blogObj) => {
     try {
-      const user = blogObj.user // extract user information
+      //const blogUser = blogObj.user // extract user information
       const blogToAdd = await blogService.postBlog(blogObj)
-      dispatch(appendBlog(blogToAdd))
+      const blogWithUser = { ...blogToAdd, user }
+      dispatch(appendBlog(blogWithUser))
       //hideBlogFormRef.current.toggleVisibility()
       dispatch(
         setNotification(
