@@ -1,12 +1,11 @@
 /* eslint-disable react-redux/useSelector-prefer-selectors */
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link, Route, Routes } from 'react-router-dom'
 import { Blogs } from './components/Blog'
-import BlogForm from './components/BlogForm'
 import Login from './components/Login'
 import Notification from './components/Notification'
-import Togglable from './components/Togglable'
+import Users from './components/Users'
 import { setBlogs } from './reducers/blogReducer'
 import { setNotification } from './reducers/notificationReducer'
 import { setUser } from './reducers/userReducer'
@@ -19,7 +18,6 @@ const App = () => {
   //const [notificationMessage, setNotificationMessage] = useState(null)
   //const [notificationStyle, setNotificationStyle] = useState('info')
   const dispatch = useDispatch()
-  const hideBlogFormRef = useRef()
 
   useEffect(() => {
     blogService.getAll().then((blogs) => dispatch(setBlogs(blogs)))
@@ -46,28 +44,24 @@ const App = () => {
     dispatch(setNotification(`Notification: ${message}`, 5))
   }
 
-  const BlogView = () => (
-    <div>
-      <h2>blogs</h2>
-      <Notification />
+  const LogoutButton = () => {
+    if (user === null) return
+
+    return (
       <p>
-        {user.name} logged in
         <button id="logout-button" onClick={handleLogout}>
           Logout
         </button>
       </p>
-      <Togglable buttonLabel="new blog" ref={hideBlogFormRef}>
-        <BlogForm />
-      </Togglable>
-      <Blogs />
-    </div>
-  )
+    )
+  }
 
   const Nav = () => {
     return (
       <div>
         <Link to="/">home</Link>
         <Link to="/users">users</Link>
+        <LogoutButton />
       </div>
     )
   }
@@ -78,7 +72,8 @@ const App = () => {
       <Nav />
       <Notification />
       <Routes>
-        <Route path="/" element={user === null ? <Login /> : <BlogView />} />
+        <Route path="/" element={user === null ? <Login /> : <Blogs />} />
+        <Route path="/users" element={<Users />} />
       </Routes>
     </>
   )

@@ -1,9 +1,11 @@
 /* eslint-disable react-redux/useSelector-prefer-selectors */
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { like, removeBlog } from '../reducers/blogReducer'
 import { setNotification } from '../reducers/notificationReducer'
 import blogService from '../services/blogs'
+import BlogForm from './BlogForm'
+import Togglable from './Togglable'
 
 const Blog = ({ blog, user, handleDelete }) => {
   const dispatch = useDispatch()
@@ -82,6 +84,7 @@ const Blog = ({ blog, user, handleDelete }) => {
 const Blogs = () => {
   const dispatch = useDispatch()
   const user = useSelector((state) => state.user)
+  const hideBlogFormRef = useRef()
 
   const handleDelete = async (blog) => {
     if (window.confirm('Delete post?')) {
@@ -97,6 +100,10 @@ const Blogs = () => {
   console.log(blogs)
   return (
     <>
+      <h2>blogs</h2>
+      <Togglable buttonLabel="new blog" ref={hideBlogFormRef}>
+        <BlogForm />
+      </Togglable>
       {blogs.map((blog) => {
         if (!blog) return null // async delete messes up so gotta guard
         return (
