@@ -37,6 +37,17 @@ const Blog = ({ blog }) => {
         </div>
         <a href={`http://${blog.url}`}>{blog.url}</a>
         <div>added by {blog.user.name}</div>
+
+        <h3>Comments</h3>
+        <ul>
+          {
+            blog.comments
+              ? blog.comments.map((c) => {
+                return (<li key={c.id}>{c.content}</li>)
+              })
+              : null
+          }
+        </ul>
       </div>
     </>
   )
