@@ -24,6 +24,10 @@ const blogSlice = createSlice({
       const changedBlog = { ...blogToChange, likes: blogToChange.likes + 1 }
       return state.map((b) => (b.id !== id ? b : changedBlog))
     },
+    updateBlog(state, action) {
+      const id = action.payload.id
+      return state.map(b => (b.id !== id ? b : action.payload))
+    },
     sortBlogs(state, _action) {
       return state.sort((a, b) => b.likes - a.likes)
     },
@@ -37,6 +41,6 @@ export const likeBlog = blog => {
   }
 }
 
-export const { createBlog, appendBlog, removeBlog, setBlogs, like, sortBlogs } =
+export const { createBlog, appendBlog, removeBlog, setBlogs, updateBlog, like, sortBlogs } =
   blogSlice.actions
 export default blogSlice.reducer

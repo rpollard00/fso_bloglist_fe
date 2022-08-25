@@ -1,11 +1,66 @@
 /* eslint-disable react-redux/useSelector-prefer-selectors */
+import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useNavigate } from 'react-router'
-import { likeBlog, removeBlog } from '../reducers/blogReducer'
+import { useMatch, useNavigate } from 'react-router'
+import { likeBlog, removeBlog, updateBlog } from '../reducers/blogReducer'
 import { setNotification } from '../reducers/notificationReducer'
+import blogService from '../services/blogs'
+
+const Comment = ({ blog }) => {
+  const [comment, setComment] = useState('')
+  const dispatch = useDispatch()
+  //console.log(props.blog)
+
+  const match = useMatch('/blogs/:id')
+  const blogId = match.params.id
+
+  const addComment = async (comment) => {
+    if (!blog) return null
+
+    try {
+      const commentToAdd = await blogService.postComment(comment, blogId)
+      //console.log('commentToAdd', commentToAdd)
+      const updatedBlog = { ...blog, comments: [...blog.comments, commentToAdd] || [commentToAdd] }
+      console.log('updatedBlog', blog)
+      dispatch(updateBlog(updatedBlog))
+
+      dispatch(
+        setNotification(
+          `Comment ${comment.content} added `,
+          5,
+        ),
+      )
+    } catch (exception) {
+      dispatch(
+        setNotification(
+          `Failed to create new comment - ${exception.response.data.error}`,
+          5,
+        ),
+      )
+    }
+  }
+
+  const handleSubmit = (event) => {
+    event.preventDefault()
+    const newComment = {
+      content: comment
+    }
+    //console.log(newComment)
+    addComment(newComment)
+    setComment('')
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input value={comment} onChange={(event) => setComment(event.target.value)} type="text"></input>
+      <button>add comment</button>
+    </form>
+  )
+}
 
 const Blog = ({ blog }) => {
   const user = useSelector(state => state.user)
+
   const dispatch = useDispatch()
   const style = {
     border: 'solid',
@@ -39,6 +94,7 @@ const Blog = ({ blog }) => {
         <div>added by {blog.user.name}</div>
 
         <h3>Comments</h3>
+        <Comment blog={blog}/>
         <ul>
           {
             blog.comments
