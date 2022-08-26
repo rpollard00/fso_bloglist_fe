@@ -2,9 +2,9 @@ import { Link } from 'react-router-dom'
 
 const Users = ({ users }) => {
   return (
-    <>
-      <h2>Users</h2>
-      <table>
+    <div className="block">
+      <h2 className="title">Users</h2>
+      <table className="table is-hoverable is-striped">
         <thead>
           <tr>
             <th>Name</th>
@@ -22,7 +22,7 @@ const Users = ({ users }) => {
           ))}
         </tbody>
       </table>
-    </>
+    </div>
   )
 }
 

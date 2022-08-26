@@ -101,10 +101,11 @@ const BlogForm = () => {
               onChange={handleBlogInput}
             />
           </li>
-          <button id="submit-button" type="submit">
-            create
-          </button>
+
         </ul>
+        <button className="button is-link" id="submit-button" type="submit">
+            create
+        </button>
       </form>
     </div>
   )

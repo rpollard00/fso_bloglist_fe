@@ -52,8 +52,8 @@ const Comment = ({ blog }) => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <input value={comment} onChange={(event) => setComment(event.target.value)} type="text"></input>
-      <button>add comment</button>
+      <input className="input" value={comment} onChange={(event) => setComment(event.target.value)} type="text"></input>
+      <button className="button">add comment</button>
     </form>
   )
 }
@@ -67,22 +67,28 @@ const Blog = ({ blog }) => {
     padding: 5,
   }
 
+  const getUserId = () => {
+    if (!user) return null
+
+    return user
+  }
+
   const navigate = useNavigate()
 
   if (!blog) return null
 
   return (
     <>
-      <div style={style}>
-        <h2>
+      <div className="box" style={style}>
+        <h2 className="subtitle is-strong">
           {blog.title} by {blog.author}
         </h2>
         <div>
           {blog.likes} likes
-          <button id="btn-like" onClick={() => {dispatch(likeBlog(blog))}}>
+          <button className="button" id="btn-like" onClick={() => {dispatch(likeBlog(blog))}}>
             like
           </button>
-          {user.id === blog.user.id ? <button id="btn-delete" onClick={() => {
+          {getUserId() === blog.user.id ? <button className="button" id="btn-delete" onClick={() => {
             dispatch(removeBlog(blog))
             dispatch(setNotification(`Alert: ${blog.title} deleted.`, 5))
             navigate('/')

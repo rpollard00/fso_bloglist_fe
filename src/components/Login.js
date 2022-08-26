@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useDispatch } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 import { setNotification } from '../reducers/notificationReducer'
 import { setUser } from '../reducers/userReducer'
 import blogService from '../services/blogs'
@@ -9,6 +10,7 @@ const Login = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const dispatch = useDispatch()
+  const navigate = useNavigate()
 
   const handleLogin = async (event) => {
     event.preventDefault()
@@ -28,6 +30,7 @@ const Login = () => {
           'info',
         ),
       )
+      navigate('/')
     } catch (exception) {
       dispatch(
         setNotification(
@@ -44,29 +47,42 @@ const Login = () => {
     <div>
       <h2>log in to application</h2>
       <form onSubmit={handleLogin}>
-        <div>
-          username
-          <input
-            id="username"
-            type="text"
-            value={username}
-            name="Username"
-            onChange={({ target }) => setUsername(target.value)}
-          />
+        <div className="field">
+          <label className="label">username</label>
+          <div className="control has-icons-left has-icons-right">
+            <input
+              id="username"
+              type="text"
+              className="input"
+              value={username}
+              placeholder="Username"
+              name="Username"
+              onChange={({ target }) => setUsername(target.value)}
+            />
+          </div>
         </div>
-        <div>
-          password
-          <input
-            id="password"
-            type="password"
-            value={password}
-            name="Password"
-            onChange={({ target }) => setPassword(target.value)}
-          />
+
+        <div className="field">
+          <label className="label">password</label>
+          <div className="control has-icons-left has-icons-right">
+            <input
+              id="password"
+              type="password"
+              className="input"
+              value={password}
+              placeholder="password123"
+              name="Password"
+              onChange={({ target }) => setPassword(target.value)}
+            />
+          </div>
         </div>
-        <button id="login-button" type="submit">
+
+        <div className="control">
+          <button id="login-button" className="button is-link" type="submit">
           login
-        </button>
+          </button>
+        </div>
+
       </form>
     </div>
   )
